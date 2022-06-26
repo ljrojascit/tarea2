@@ -1,0 +1,161 @@
+---
+title: "Tarea 01 Data Management"
+subtitle: "Master of Data Science"
+author: "Profesor: Miguel Romero"
+date: "29-04-2022"
+output: 
+    pdf_document:
+        toc: true
+        toc_depth: 2
+        extra_dependencies: ["ragged2e"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Antecedentes
+### Alumnos
+
+- Leonardo Rojas
+- Juan Pablo Espinoza
+- Sebastian Vera
+
+\newpage
+
+
+## Parte 1
+
+### 1. Entregue un ejemplo de un atributo multivaluado para una relacion binaria entre dos entidades.
+
+Tomaremos como punto de partida el siguiente esquema de relación:
+
+\center
+![](image1.png){width=50%}
+\justify
+
+Tenemos la entidad Empresa (o proyecto), y la entidad Trabajador
+
+Un Trabajador presta serivicios en una Empresa (o proyecto), para su quehacer debe completar cada día una lista de múltiples tareas.
+
+Estas tareas sólo existen mientras un trabajador específico trabaje en una empresa (o proyecto) específica, por lo cual estas tareas son atributos de la relación, y no de la empresa o del trabajador.
+
+### 2a. Como transformar una entidad fuerte con un atributo multivaluado al modelo relacional
+
+Utilizará una relación muchos a muchos con tres tablas, una para la entidad, una para las posibilidades del atributo multivaluado, y uno que relacione la entidad con el atributo.
+
+En el ejemplo de arriba, transformando al modelo relacional específicamente la entidad “Trabajador”.
+\center
+
+Trabajador($\underline{rut}$)
+
+profesion($\underline{id}$, etc)
+
+trabajador_profesion($\underline{trabajador\_rut}$, $\underline{profesion\_id}$)
+
+\justify
+
+Para asignarle más profesiones a una persona, se agregan más tuplas a la tabla trabajador_profesion.
+
+### 2b. Cómo transformar una relación binaria muchos a muchos con un atributo multivaluado al modelo relacional.
+
+Al igual que arriba, debemos utilizar una tabla para cada entidad, y una tercera tabla para relacionarlos, la tabla intermedia debe tener un campo extra para el nuevo atributo. Este puede apuntar a una cuarta tabla que lista los atributos posibles también.
+
+En el ejemplo de arriba:
+\center
+
+trabajador($\underline{rut}$)
+
+empresa($\underline{rut}$)
+
+tarea($\underline{id}$, etc)
+
+trabajador_empresa_tarea($\underline{rut\_trabajador}$, $\underline{rut\_empresa}$, $\underline{id\_tarea}$)
+
+\justify
+
+La tabla tareas tiene las tareas posibles para hacer en un día, y la tabla trabajador_empresa_tarea relaciona a las tres. Por ejemplo para notar que un trabajador hace múltiples tareas se agregan múltiples tuplas a trabajador_empresa_tarea mencionando al trabajador, la empresa y las tareas respectivas.
+
+Notar que la tarea no necesariamente necesita una tabla extra, esta puede ser agregada si las tareas son complejas y requieren múltiples campos para ser descritas. Si las tareas pueden ser descritas en un string este puede ser puesto directamente en la tabla de trabajador_empresa_tarea, sin una llave foránea extra.
+
+### 3. Crear diagrama ER del esquema relacional
+\center
+
+titles($\underline{id}$, title, release year, rating, votes)
+
+names($\underline{id}$, name, birth year, death year)
+
+categories($\underline{title\_id}$, $\underline{category}$)
+
+directed($\underline{title\_id}$, $\underline{name\_id}$)
+
+acted($\underline{title\_id}$, $\underline{name\_id}$, $\underline{role}$)
+
+\justify
+
+El diagrama entidad relación del esquema mencionado es el siguiente:
+
+\center
+![](tarea db 1-3.drawio.png){width=80%}
+
+\newpage
+\justify
+
+## Parte 2
+
+Considere el siguiente esquema relacional que captura alumnos, cursos, y la toma de cursos:
+
+\center
+alumnos($\underline{rut}$, nombre, edad)
+
+cursos($\underline{codigo}$, nombre, carrera)
+
+toma($\underline{rut\_alumno}$, $\underline{codigo\_curso}$)
+\justify
+
+### 1. Consulta Algebra relacional que entrega el nombre y edad de todos los alumnos que han tomado el curso "Topologia"
+
+Primeramente se contruye una relación de selección o filtro sobre el producto cruz entre la tabla cursos y toma, el filtro se asegura que la informacion del curso se asocie al curso que tomó cada alumno:
+
+$$
+R_1 = \sigma_{codigo = codigo\_curso}(Cursos \times Toma) 
+$$
+Luego, cruzamos esta relación con la tabla de alumnos seleccionando el caso de que el rut del alumno de la tabla $R_1$ sea el rut del la tabla Alumnos.
+
+$$
+R_2 = \sigma_{rut = rut\_alumno}(R_1 \times Alumnos) 
+$$
+Esta tabla $R_2$ contiene la información de los alumnos junto a los cursos que han tomado, el cnombre del curso y la carrera al que pertenece. Por lo tanto, la tarea restante es seleccionar los casos donde el nombre del curso sea "Topologia" y luego proyectar sobre el nombre del alumno y su edad:
+
+$$ R_3 = \pi_{nombre\_alumno, edad} (\sigma_{nombre\_cursos =  "Topologia"} R_2)
+$$
+
+### 2. Escriba una consulta en álgebra relación que entregue el rut de todos los alumnos que han tomado *todos* los cursos de la carrera "Informática".
+
+Para rescatar todos los alumnos que han tomado *todos* los cursos de "Informática" es necesario rescatar los codigo de curso de la carrera "Informatica" y cruzarlos con los rut de los alumnos:
+
+$$R_1 = \sigma_{carrera = "informatica"}(Cursos) \times \pi_{rut}(alumnos)$$
+
+Con esto se objetiene la combinacion total de alumnos y codigos de los ramos de la carrera informatica. Esta sería la tabla ideal cuando todos los alumnos cursan todos los ramos de informatica.
+
+A esta tabla le restamos la tabla toma, para rescatar los alumnos a los cuales les faltan ramos por tomar de informática 
+
+$$R_2 = R_1 - toma$$
+
+Con esto podemos descartar los alumnos que no han tomado todos los ramos de informática.
+
+$$R_3 = \sigma_{rut}(alumnos) - \sigma_{rut}(R_2) $$
+
+### 3. Indique si las siguientes afirmaciones son verdaderas o falsas. Justique las falsas:
+
+A) Una expresión de la forma $\sigma_{C_1}(\sigma_{C_2}(E))$ es siempre equivalente a la expresión $\sigma_{C_1 \and C_2}(E)$
+
+**Verdadero.**
+
+B) Una expresión de la forma $\pi_A(\sigma_C(E))$, donde $A$ es un atributo de $E$ y $C$ es cualquier condición sobre los atributos de $E$, es siempre equivalente a la expresión $\sigma_C(\pi_A(E))$.
+
+**Falsa**, ya que depende de si la evaluación y el filtro atacan duplas diferentes o la misma dupla, filtrando variable que no conectan. Puede darse el caso de que se proyecte sobre atributos que no esten presentes en la condicion $C$ que realiza la selección, generando una selección inválida.
+
+C) Una expresión de la forma $\sigma_C(E_1 \times E_2)$, donce $C$ es una condición sobre los atributos de $E_1$, es siempre equivalente a la expresión $\sigma_C(E_1) \times E_2$
+
+**Verdadero**

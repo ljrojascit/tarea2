@@ -1,0 +1,19 @@
+- configurar pgadming elephant sql
+- cargar base dump2
+- subir informe con respuestas
+- en cada respuesta incluir screenshot (consulta + resultado, o tiempo ejec)
+
+Parte 1:
+
+1. Co-stars: pareja (name1, name2) actores en misma pelicula
+- nombres distintos, sin dulplicados, relacion simetrica 
+2. Consulta recursiva: co-star indirecto de 'Kevin Bacon', alcanzables por cadena de co-stars (de cuarlquier largo), sin duplicados. Puede aparecer Kevin Bacon
+
+WITH RECURSIVE co_star(name1,name2) AS (
+... def costar..
+),
+indirect_co_star_bacon (name) AS (
+... def rec indir..
+)
+Consulta Final;
+-> forma de ordenar WITHS cuando algunos es recursivo

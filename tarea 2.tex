@@ -1,0 +1,129 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+%\usepackage{hyperref}
+%\usepackage[spanish]{babel}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\begin{document}
+
+\noindent {\bf UNIVERSIDAD ADOLFO IBA\~NEZ\\
+FACULTAD DE INGENIER\'IA Y CIENCIAS}
+
+\medskip
+
+\begin{center}
+\Large{{\bf Tarea 2}}\\
+\large{{\bf TICS564: Tópicos en Data Management y Data Analytics}}\\
+\small{{\bf Profesor: Miguel Romero} $\quad$ {\bf Ayudante: Isabel Donoso}}
+\end{center}
+
+
+\noindent
+{\bf Fecha de Entrega:} Viernes 24 de Junio, 23:59 hrs.\\
+
+\noindent
+{\bf Indicaciones:}
+\begin{enumerate}
+\item Se aceptar\'an tareas enviadas después de la fecha de entrega. Se descontar\'a 1.0 punto sobre la nota final por cada d\'ia de retraso. 
+\item La tarea se puede hacer en grupos de a lo más 3 personas. Debe respetar los grupos inscritos en la planilla de Webcursos.
+\item \textcolor{teal}{{\bf IMPORTANTE :}} Debe subir a Webcursos un informe con sus respuestas a los problemas de la Parte 1 y Parte 2. 
+En cada caso debe mostrar un {\bf screenshot} de su cliente (pgAdmin u otro), en donde se vea la consulta y el resultado de ella (al menos las primeras tuplas). En caso que se pidan planes de ejecución o tiempos de ejecución {\bf también} debe mostrar un screenshot. En caso que tenga que ejecutar 
+la misma consulta varias veces para estimar tiempo de ejecución, basta que muestre el screenshot de una de esas ejecuciones. 
+
+Adicionalmente, debe subir un .sql con todas las consultas utilizadas. Agregue comentarios para dejar claro a qué parte e item corresponde cada una. \end{enumerate} 
+
+\medskip
+
+Trabajaremos con una base de datos sobre el mismo esquema de la Tarea 1:
+\begin{center}
+titles(\underline{id}, title, release\_year, rating, votes)\\
+names(\underline{id}, name, birth\_year, death\_year)\\
+categories(\underline{title\_id}, \underline{category})\\
+directed(\underline{title\_id}, \underline{name\_id})\\
+acted(\underline{title\_id}, \underline{name\_id}, \underline{role})
+\end{center}
+La base de datos también fue generada a partir de los datos del \emph{Internet Movie Database (IMDb)} (\href{https://www.imdb.com/interfaces/}{https://www.imdb.com/interfaces/}). Ahora se filtraron los datos considerando sólo títulos (es decir, películas) con al menos 5.000 votos a la hora de calcular el rating (la vez anterior eran al menos 100.000 votos, por ende la base de datos es más grande ahora). Para cargar esta base de datos se provee un archivo {\tt dump\_imdb2.sql} con los comandos para su creación. 
+
+Al igual que antes, debe crear una instancia en  ElephantSQL (\href{https://www.elephantsql.com/}{https://www.elephantsql.com/}). 
+Para conectarse al servidor, se recomienda utilizar pgAdmin (\href{https://www.pgadmin.org/}{https://www.pgadmin.org/}). Puede utilizar otro cliente si lo desea. \\
+
+\noindent
+\textcolor{teal}{{\bf Observación:}} En las dos partes, la distribución de puntaje entre los items es uniforme.  
+
+\section*{Parte 1 (50\%)} 
+
+\begin{enumerate}
+\item Escriba una consulta que entregue los \emph{co-stars}, es decir, las parejas {\tt (name1, name2)} de nombres de actores que han actuado en una misma película. Cada pareja debe consistir de dos nombres \emph{distintos}, y en la salida \emph{no} pueden haber duplicados. Observe que la relación es simétrica, es decir, si aparece {\tt (name1, name2)} también aparece {\tt (name2, name1)}. 
+
+\item Escriba una consulta recursiva que entregue todos los nombres de los actores que son \emph{co-stars indirectos} de {\tt 'Kevin Bacon'}, es decir, que son alcanzables desde {\tt 'Kevin Bacon'} por una cadena de co-stars (de cualquier largo). Su respuesta \emph{no} debe tener duplicados. Es probable que en su respuesta aparezca {\tt 'Kevin Bacon'} mismo, lo cual no es un problema. \\
+
+Debe escribir una consulta de la siguiente forma:\\\\
+{\tt
+\textcolor{cyan}{WITH RECURSIVE} co\_star (name1, name2) \textcolor{cyan}{AS} (\\
+\textcolor{gray}{......definicion de co\_star}...\\
+), \\
+indirect\_co\_star\_bacon (name) \textcolor{cyan}{AS} (\\
+\textcolor{gray}{......definicion recursiva de indirect\_co\_star\_bacon...}\\
+)\\
+Consulta Final;\\
+}
+
+Esta es la forma de concatenar varios {\tt WITH}'s cuando alguno de ellos es recursivo, es decir, ponemos al principio {\tt WITH RECURSIVE} \emph{independiente} que algunas de las tablas que estamos creando no sea recursiva (por ejemplo {\tt co\_star}). 
+
+
+\item Haga lo mismo que en la pregunta anterior pero partiendo de la actriz {\tt 'Lyudmila Saveleva'}. Cambie el nombre de la tabla 
+{\tt indirect\_co\_star\_bacon} por {\tt indirect\_co\_star\_saveleva}. 
+
+\item Implemente la misma consulta del punto (2) pero creando una tabla {\tt indirect\_co\_star} que almacena las parejas {\tt (name1, name2)} conectadas por una cadena de co-star. Es decir, la consulta tiene la estructura:\\\\
+{\tt
+\textcolor{cyan}{WITH RECURSIVE} co\_star (name1, name2) \textcolor{cyan}{AS} (\\
+\textcolor{gray}{......definicion de co\_star...}\\
+), \\
+indirect\_co\_star (name1, name2) \textcolor{cyan}{AS} (\\
+\textcolor{gray}{......definicion recursiva de indirect\_co\_star...}\\
+) \\
+Consulta Final;\\
+}
+
+¿Qué puede observar cuando ejecuta su consulta? Discuta brevemente por qué sucede lo observado. 
+\end{enumerate}
+
+\noindent
+\textcolor{red}{{\bf IMPORTANTE :}} Respete la estructura de las consultas recursivas. En particular la tabla {\tt co\_star} {\bf debe} ser definida como tabla temporal con un {\tt WITH} y no como una tabla nueva ({\tt create table}) en la base de datos, ya que la base de datos podría exceder el tamaño permitido en ElephantSQL. 
+
+\section*{Parte 2 (50\%)} 
+
+\begin{enumerate}
+
+\item Considere la siguiente consulta: Entregue los nombres (sin duplicados) de todos los actores que han hecho el rol de {\tt 'Batman'}.
+ 
+Escriba esta consulta en SQL de dos formas distintas: utilizando el operador {\tt JOIN} y sin usar el operador {\tt JOIN} (es decir, haciendo el cruce de tablas en el {\tt FROM}). Asegúrese que las dos consultas entreguen los mismos resultados. Utilize {\tt EXPLAIN ANALYZE} para visualizar el plan de ejecución de cada consulta. ¿Qué puede observar de los planes de ejecución de ambas consultas (sólo los planes, no los tiempos)? 
+
+\item Tome la consulta anterior escrita con el operador {\tt JOIN}. Utilice nuevamente {\tt EXPLAIN ANALYZE} y entregue el tiempo de ejecución de la consulta. Esto aparece en el campo \emph{Execution Time} (en milisegundos), y corresponde al tiempo que el motor toma en ejecutar la consulta y entregar los resultados (OJO: esto no incluye el tiempo de planificación, y es distinto al tiempo que pgAdmin tarda en ejecutar y desplegar la respuesta de la consulta). Como cada ejecución de la consulta puede dar distintos tiempos de ejecución, ejecute varias veces la consulta y entregue un estimado (un rango). 
+
+Ahora agregue un índice \emph{btree} en el atributo {\tt role} de la table {\tt acted}. Mida nuevamente el tiempo de ejecución de la consulta. Discuta sus resultados. 
+
+\item Escriba una consulta que entregue todos los atributos de los títulos con año de estreno 2022. Compare los tiempos de ejecución (usando {\tt EXPLAIN ANALYZE}) de 3 casos: sin indices extras, un indice \emph{btree} en el atributo {\tt release\_year} de la tabla {\tt titles}, un indice \emph{hash} en el atributo {\tt release\_year} de la tabla {\tt titles}. Discuta sus resultados. 
+
+\item Escriba una consulta que entregue todos los atributos de los títulos con año de estreno entre 2018 y 2020 (utilice los operadores {\tt and}, {\tt >=} y {\tt <=}; no use {\tt between}). Compare los tiempos de ejecución (usando {\tt EXPLAIN ANALYZE}) de 3 casos: sin indices extras, un indice \emph{btree} en el atributo {\tt release\_year} de la tabla {\tt titles}, un indice \emph{hash} en el atributo {\tt release\_year} de la tabla {\tt titles}. Discuta sus resultados. 
+
+\end{enumerate}
+
+\noindent
+\textcolor{red}{{\bf IMPORTANTE :}} En la pregunta (3) y (4) asegurese de no tener los dos índices (btree y hash) simultaneamente. Recuerde que puede borrar índices con {\tt DROP INDEX}. Además puede ver los índices disponibles con la siguiente consulta:\\\\
+{\tt
+SELECT tablename, indexname, indexdef \\
+FROM pg\_indexes \\
+WHERE schemaname = `public' \\
+ORDER BY tablename, indexname; \\
+}
+
+Si copia y pega esta consulta en el cliente, probablemente deberá arreglar el guión bajo (pg\_indexes) y las comillas. 
+\end{document}
+
+
+
