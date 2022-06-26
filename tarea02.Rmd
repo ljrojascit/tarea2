@@ -97,7 +97,7 @@ Se aprecia que se alcanzan un 18.752 actores mediante una cadena de co-stars ind
 
 ### 3. Co-stars indirectos Lyudmila Saveleva
 
-Repetimos el ejercicio de buscar una cadena de co-stars indirectos para la actriz Lyudmila Saveleva, rusa, conocida por ganar el Oscar en 1969 por la película Guerra y Paz (1965). Su historia es interesante, ya que al volver a Moscú, le quitaron el oscar. La lógica de la query es similar al punto anterior:
+Repetimos el ejercicio de buscar una cadena de co-stars indirectos para la actriz Lyudmila Saveleva, rusa, conocida por ganar el Oscar en 1969 por la película Guerra y Paz (1965). Su historia es interesante, ya que al volver a Moscú, le quitaron el Oscar. La lógica de la query es similar al punto anterior:
 
 ```{sql, eval = FALSE}
 WITH RECURSIVE co_star(name1, name2) AS (
@@ -239,7 +239,7 @@ Con esta consulta obtenemos:
 
 ![Screen 2.1.2: Plan de Trabajo Actores con rol Batman, caso sin JOIN](screens/p2-1.2.png)
 
-Se aprecia que el plan involucra realzar un ``quicksort`` por ``names``, luego un ``nested loop``y finalmente un ``filter`` por rol 'Batman'. Es decir **el plan de ejecución es el mismo en ambos casos**.
+Se aprecia que el plan involucra realzar un ``quicksort`` por ``names``, luego un ``nested loop`` y finalmente un ``filter`` por rol 'Batman'. Es decir **el plan de ejecución es el mismo en ambos casos**.
 
 
 \newpage
