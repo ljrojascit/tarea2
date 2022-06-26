@@ -54,7 +54,7 @@ Se genera una tabla con 167.228 parejas de actores que han actuado en una misma 
 
 \newpage
 
-### 2. Co starts indirectos Kevin Bacon
+### 2. Co-stars indirectos Kevin Bacon
 
 Ahora construimos una consulta recursiva de co-stars indirectos del actor *Kevin Bacon*.
 
@@ -163,7 +163,7 @@ indirect_co_star(name1, name2) AS (
 
 Esta consulta es similar a la realizada en el punto (2) y entrega los mismos resultados:
 
-![Screen 1.4.1: Tabla indirect_co_star filtro en origen](screens/p1-4.1.png){width=80% heigth=80%}
+![Screen 1.4.1: Tabla indirect_co_star filtro en origen](screens/p1-4.1.png)
 
 \newpage
 
@@ -194,7 +194,7 @@ indirect_co_star(name1, name2) AS (
 
 En este caso el proceso se demora mucho más y entrega los siguientes resultados:
 
-![Screen 1.4.2: Tabla indirect_co_star filtro a la salida](screens/p1-4.2.png){width=80% height=80%}
+![Screen 1.4.2: Tabla indirect_co_star filtro a la salida](screens/p1-4.2.png)
 
 Esto se debe a que en este caso construye la cadena completa de relaciones indirectas desde *todos* los actores y no solo desde un conjunto de actores de interés. El efecto de esto es que **no se cuenta con suficiente memoria para trabajar la tabla** que es lo que indica el mensaje de error encontrado en la consola.
 
@@ -306,7 +306,7 @@ En el caso base sin índice tenemos un resultado centrado en 1 ms.
 
 Caso índice *btree*:
 
-![Screen 2.4.2: Consulta Títulos 2018-2020 indice btree](screens/p2-4.2.png){width=80% heigth=80%}
+![Screen 2.4.2: Consulta Títulos 2018-2020 indice btree](screens/p2-4.2.png)
 
 Para el caso *btree* tenemos una mejora relevante, llegando al rango 0.2 a 0.5 ms
 
